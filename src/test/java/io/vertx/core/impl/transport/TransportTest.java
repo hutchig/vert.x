@@ -10,6 +10,11 @@
  */
 package io.vertx.core.impl.transport;
 
+import java.util.concurrent.ThreadFactory;
+
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.concurrent.FastThreadLocalThread;
@@ -23,10 +28,6 @@ import io.vertx.core.impl.VertxThread;
 import io.vertx.core.net.impl.transport.Transport;
 import io.vertx.test.core.BlockedThreadWarning;
 import io.vertx.test.core.VertxTestBase;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.util.concurrent.ThreadFactory;
 
 public class TransportTest extends VertxTestBase {
 

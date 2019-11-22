@@ -35,9 +35,10 @@ public class VertxThreadFactory implements ThreadFactory {
     this.maxExecTimeUnit = maxExecTimeUnit;
   }
 
+  @Override
   public Thread newThread(Runnable runnable) {
-    VertxThread t = new VertxThread(runnable, prefix + threadCount.getAndIncrement(), worker, maxExecTime, maxExecTimeUnit);
-    // Vert.x threads are NOT daemons - we want them to prevent JVM exit so embededd user doesn't
+    VertxThreadImpl t = new VertxThreadImpl(runnable, prefix + threadCount.getAndIncrement(), worker, maxExecTime, maxExecTimeUnit);
+    // Vert.x threads are NOT daemons - we want them to prevent JVM exit so embedded user doesn't
     // have to explicitly prevent JVM from exiting.
     if (checker != null) {
       checker.registerThread(t, t);

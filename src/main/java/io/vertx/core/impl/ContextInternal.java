@@ -165,7 +165,7 @@ public interface ContextInternal extends Context, Executor {
 
   /**
    * Emit an {@code event} to the {@code handler} on this context. The handler is executed directly by the caller thread
-   * which must be a {@link VertxThread}.
+   * which must be a {@link VertxThreadImpl}.
    * <p>
    * The handler execution is monitored by the blocked thread checker.
    * <p>

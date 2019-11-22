@@ -40,7 +40,7 @@ abstract class ContextImpl extends AbstractContext {
   static void executeIsolated(Handler<Void> task) {
     Thread currentThread = Thread.currentThread();
     if (currentThread instanceof VertxThread) {
-      VertxThread vertxThread = (VertxThread) currentThread;
+      VertxThreadImpl vertxThread = (VertxThreadImpl) currentThread;
       ContextInternal prev = vertxThread.beginEmission(null);
       try {
         task.handle(null);
@@ -88,7 +88,7 @@ abstract class ContextImpl extends AbstractContext {
 
   protected ContextImpl(VertxInternal vertx, VertxTracer<?, ?> tracer, EventLoop eventLoop, WorkerPool internalBlockingPool, WorkerPool workerPool, Deployment deployment,
                         ClassLoader tccl) {
-    if (VertxThread.DISABLE_TCCL && tccl != ClassLoader.getSystemClassLoader()) {
+    if (VertxThreadImpl.DISABLE_TCCL && tccl != ClassLoader.getSystemClassLoader()) {
       log.warn("You have disabled TCCL checks but you have a custom TCCL to set.");
     }
     this.tracer = tracer;

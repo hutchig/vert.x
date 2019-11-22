@@ -11,18 +11,8 @@
 
 package io.vertx.core;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Context;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.WorkerExecutor;
-import io.vertx.core.impl.VertxThread;
-import io.vertx.test.core.BlockedThreadWarning;
-import io.vertx.test.core.TestUtils;
-import io.vertx.test.core.VertxTestBase;
-import org.junit.Rule;
-import org.junit.Test;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,7 +24,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.util.concurrent.TimeUnit.*;
+import org.junit.Rule;
+import org.junit.Test;
+
+import io.vertx.core.impl.VertxThread;
+import io.vertx.core.impl.VertxThreadImpl;
+import io.vertx.test.core.BlockedThreadWarning;
+import io.vertx.test.core.TestUtils;
+import io.vertx.test.core.VertxTestBase;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -222,7 +219,7 @@ public class NamedWorkerPoolTest extends VertxTestBase {
     worker.executeBlocking(f -> {
       Thread t = Thread.currentThread();
       assertTrue(t instanceof VertxThread);
-      VertxThread thread = (VertxThread) t;
+      VertxThreadImpl thread = (VertxThreadImpl) t;
       assertEquals(maxExecuteTime, thread.maxExecTime());
       assertEquals(maxExecuteTimeUnit, thread.maxExecTimeUnit());
       f.complete();

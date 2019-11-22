@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static io.vertx.core.impl.VertxThread.DISABLE_TCCL;
+import static io.vertx.core.impl.VertxThreadImpl.DISABLE_TCCL;
 
 /**
  * A context implementation that does not hold any specific state.
@@ -41,7 +41,7 @@ abstract class AbstractContext implements ContextInternal {
   static Context context() {
     Thread current = Thread.currentThread();
     if (current instanceof VertxThread) {
-      return ((VertxThread) current).context();
+      return ((VertxThreadImpl) current).context();
     } else if (current instanceof FastThreadLocalThread) {
       return holderLocal.get().ctx;
     }
@@ -117,7 +117,7 @@ abstract class AbstractContext implements ContextInternal {
     ContextInternal prev;
     Thread th = Thread.currentThread();
     if (th instanceof VertxThread) {
-      prev = ((VertxThread)th).beginEmission(this);
+      prev = ((VertxThreadImpl)th).beginEmission(this);
     } else {
       prev = beginNettyThreadEmit(th);
     }
@@ -156,7 +156,7 @@ abstract class AbstractContext implements ContextInternal {
       th.setContextClassLoader(previous != null ? previous.classLoader() : null);
     }
     if (th instanceof VertxThread) {
-      ((VertxThread)th).endEmission(previous);
+      ((VertxThreadImpl)th).endEmission(previous);
     } else {
       endNettyThreadAssociation(th, previous);
     }

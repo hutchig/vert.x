@@ -18,10 +18,12 @@ import io.vertx.core.file.FileSystemOptions;
 import io.vertx.core.impl.cpu.CpuCoreSensor;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
+import io.vertx.core.spi.WorkerExecutorFactory;
 import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.core.tracing.TracingOptions;
 
 import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static io.vertx.core.file.FileSystemOptions.DEFAULT_FILE_CACHING_ENABLED;
@@ -43,6 +45,12 @@ public class VertxOptions {
    * The default number of threads in the worker pool = 20
    */
   public static final int DEFAULT_WORKER_POOL_SIZE = 20;
+
+  /**
+   * The default factory that creates a thread pool for workers.
+   */
+  public static final WorkerExecutorFactory DEFAULT_WORKER_EXECUTOR_FACTORY =
+    (options, threadFactory) -> Executors.newFixedThreadPool(options.getWorkerPoolSize(), threadFactory);
 
   /**
    * The default number of threads in the internal blocking  pool (used by some internal operations) = 20
@@ -169,6 +177,7 @@ public class VertxOptions {
 
   private int eventLoopPoolSize = DEFAULT_EVENT_LOOP_POOL_SIZE;
   private int workerPoolSize = DEFAULT_WORKER_POOL_SIZE;
+  private WorkerExecutorFactory workerExecutorFactory = DEFAULT_WORKER_EXECUTOR_FACTORY;
   private int internalBlockingPoolSize = DEFAULT_INTERNAL_BLOCKING_POOL_SIZE;
   private long blockedThreadCheckInterval = DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
   private long maxEventLoopExecuteTime = DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME;
@@ -203,6 +212,7 @@ public class VertxOptions {
   public VertxOptions(VertxOptions other) {
     this.eventLoopPoolSize = other.getEventLoopPoolSize();
     this.workerPoolSize = other.getWorkerPoolSize();
+    this.workerExecutorFactory = other.getWorkerExecutorFactory();
     this.blockedThreadCheckInterval = other.getBlockedThreadCheckInterval();
     this.maxEventLoopExecuteTime = other.getMaxEventLoopExecuteTime();
     this.maxWorkerExecuteTime = other.getMaxWorkerExecuteTime();
@@ -278,6 +288,24 @@ public class VertxOptions {
       throw new IllegalArgumentException("workerPoolSize must be > 0");
     }
     this.workerPoolSize = workerPoolSize;
+    return this;
+  }
+
+  /**
+   * @return Factory creating executor service for worker threads.
+   */
+  public WorkerExecutorFactory getWorkerExecutorFactory() {
+    return workerExecutorFactory;
+  }
+
+  /**
+   * Set the factory creating executor service for worker threads.
+   *
+   * @param workerExecutorFactory Factory creating executor service for worker threads.
+   * @return a reference to this, so the API can be used fluently
+   */
+  public VertxOptions setWorkerExecutorFactory(WorkerExecutorFactory workerExecutorFactory) {
+    this.workerExecutorFactory = Objects.requireNonNull(workerExecutorFactory);
     return this;
   }
 
@@ -890,6 +918,7 @@ public class VertxOptions {
     return "VertxOptions{" +
         "eventLoopPoolSize=" + eventLoopPoolSize +
         ", workerPoolSize=" + workerPoolSize +
+        ", workerExecutorFactory=" + workerExecutorFactory +
         ", internalBlockingPoolSize=" + internalBlockingPoolSize +
         ", blockedThreadCheckIntervalUnit=" + blockedThreadCheckIntervalUnit +
         ", blockedThreadCheckInterval=" + blockedThreadCheckInterval +
